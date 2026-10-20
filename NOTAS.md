@@ -21,3 +21,5 @@
 * ****No guardar tokens directamente en el código:****
 
   Un token no debe quedar pegado en un archivo porque puede **expirar** y, además, si el archivo se sube a GitHub u otro repositorio, el token puede quedar **expuesto públicamente**. Las credenciales y tokens deben manejarse mediante variables de entorno, archivos `.env` (sin subirlos al repositorio) o un gestor de secretos.
+
+  los 500 pierden las cabeceras de CORS porque el manejador de Exception vive por encima del middleware

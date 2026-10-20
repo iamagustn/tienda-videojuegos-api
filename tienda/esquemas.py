@@ -21,7 +21,7 @@ class UsuarioEntrada(BaseModel):
     nombre: str
     apellidos: str
     correo: str
-    contrasena: str
+    contrasena: str = Field(max_length=72)
 
 class UsuarioSalida(BaseModel):
     model_config = ConfigDict(from_attributes=True)
