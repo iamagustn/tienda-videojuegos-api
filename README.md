@@ -48,7 +48,7 @@ Los precios se manejan en centavos: `9000` son $90.00.
 1. Clona el repositorio y entra a la carpeta:
 
    ```bash
-   git clone https://github.com/fckagstn/tienda-videojuegos-api.git
+   git clone https://github.com/iamagustn/tienda-videojuegos-api
    cd tienda-videojuegos-api
    ```
 
