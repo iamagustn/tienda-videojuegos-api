@@ -1,110 +1,131 @@
-# Tienda de Videojuegos API
 
-Este proyecto es una API de una tienda de videojuegos que responde a peticiones HTTP. Cuenta con registro de usuarios, login y autenticación con token, y maneja los errores siempre en formato JSON con status codes coherentes con los errores que ocurren. Además cuenta con pruebas hechas con pytest.
+# Video Game Store API
 
-Por ejemplo, la API responde:
+[Español](README.es.md)
 
-- **401** si no mandas el token, si es inválido o ya expiró, o si el correo o la contraseña son incorrectos.
-- **404** si el producto que buscas no existe.
-- **409** si el correo o el nombre del producto ya están en uso.
-- **422** si mandas datos inválidos, como un precio en 0 o un id que no es número.
-- **500** si algo falla dentro del servidor. La respuesta trae un `id_error`, que también queda en el log para poder encontrar qué pasó.
+This project is a video game store API that responds to HTTP requests. It includes user registration, login, and token-based authentication. It also handles errors in JSON format using appropriate HTTP status codes. In addition, it includes tests written with pytest.
+
+For example, the API returns:
+
+- **401** if you do not send a token, if the token is invalid or has expired, or if the email or password is incorrect.
+- **404** if you look for a product that does not exist.
+- **409** if the email or product name is already in use.
+- **422** if you send invalid data, such as a price of 0 or an ID that is not a number.
+- **500** if something goes wrong on the server. The response includes an `id_error`, which is also recorded in the log to help identify what went wrong.
 
 ## Stack
 
 - **Python**
-- **FastAPI** como framework web
-- **SQLAlchemy** como ORM
-- **PostgreSQL** como base de datos
-- **pytest** como herramienta de pruebas
-- **bcrypt** y **PyJWT** como librerías de autenticación (bcrypt para proteger las contraseñas y PyJWT para los tokens)
-- **Uvicorn** como servidor
+- **FastAPI**
+- **SQLAlchemy**
+- **PostgreSQL**
+- **pytest**
+- **bcrypt**
+- **PyJWT**
+- **Uvicorn**
 
 ## Endpoints
 
-| Método | Ruta | Qué hace | Requiere token |
-|--------|------|----------|----------------|
-| POST | `/usuarios` | Registra un usuario nuevo | No |
-| POST | `/login` | Inicia sesión y te devuelve un token | No |
-| GET | `/perfil` | Muestra los datos de tu cuenta | Sí |
-| GET | `/productos` | Lista todos los productos | No |
-| GET | `/productos/{id}` | Muestra un producto por su id | No |
-| POST | `/productos` | Agrega un producto nuevo | Sí |
-| PUT | `/productos/{id}` | Reemplaza todos los datos de un producto | Sí |
-| PATCH | `/productos/{id}` | Cambia solo los datos que le mandes de un producto | Sí |
-| DELETE | `/productos/{id}` | Elimina un producto | Sí |
+| Method | Route | Description | Requires a token |
+|--------|-------|-------------|------------------|
+| POST | `/usuarios` | Register a new user | No |
+| POST | `/login` | Log in and return a token | No |
+| GET | `/perfil` | Display your account information | Yes |
+| GET | `/productos` | List all products | No |
+| GET | `/productos/{id}` | Retrieve a product by its ID | No |
+| POST | `/productos` | Add a new product | Yes |
+| PUT | `/productos/{id}` | Replace all the data of a product | Yes |
+| PATCH | `/productos/{id}` | Update only the provided product data | Yes |
+| DELETE | `/productos/{id}` | Delete a product | Yes |
 
-Para las rutas que piden token, primero haz login y manda el `access_token` que te devuelve en la cabecera `Authorization: Bearer <token>`. El token dura 30 minutos.
+For endpoints that require a token, first log in and include the returned `access_token` in the `Authorization: Bearer <token>` header. The token expires after 30 minutes.
 
-Los precios se manejan en centavos: `9000` son $90.00.
+Prices are stored in cents: `9000` represents $90.00.
 
-## Requisitos previos
+## Prerequisites
 
-- Python 3.10 o superior
-- PostgreSQL instalado y corriendo en tu computadora
+- Python 3.10 or higher
+- PostgreSQL installed and running on your computer
 
-## Instalación
+## Installation
 
-1. Clona el repositorio y entra a la carpeta:
+1. Clone this repository and enter the directory:
 
    ```bash
    git clone https://github.com/iamagustn/tienda-videojuegos-api
    cd tienda-videojuegos-api
    ```
 
-2. Crea un entorno virtual:
+2. Create a virtual environment:
 
    ```bash
    python -m venv venv
    ```
 
-   Y actívalo: en Windows con `venv\Scripts\activate` y en Linux o Mac con `source venv/bin/activate`.
+   Activate it:
 
-3. Instala las dependencias:
+   Windows:
+
+   ```bat
+   venv\Scripts\activate
+   ```
+
+   Linux or macOS:
+
+   ```bash
+   source venv/bin/activate
+   ```
+
+3. Install the dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Configura las variables de entorno: copia el archivo `.env.example`, renómbralo a `.env` y llénalo con tus datos.
+4. Set up the environment variables: copy the `.env.example` file, name the copy `.env`, and fill it in with your information.
 
-   - `DB_USER` y `DB_PASSWORD`: tu usuario y contraseña de PostgreSQL.
-   - `DB_PORT`: el puerto donde corre PostgreSQL. Si no lo pones, usa el 5432.
-   - `LLAVE`: una cadena larga y aleatoria que se usa para firmar los tokens. Puedes generar una con `python -c "import secrets; print(secrets.token_hex(32))"`.
-   - `CORREO` y `CONTRASENA`: no son obligatorias, el programa funciona sin ellas.
+   - `DB_USER` and `DB_PASSWORD`: your PostgreSQL username and password.
+   - `DB_PORT`: the port on which PostgreSQL is running. If you do not specify it, the default port is 5432.
+   - `LLAVE`: a long, random string used to sign tokens. You can generate one by running `python -c "import secrets; print(secrets.token_hex(32))"`.
+   - `CORREO` and `CONTRASENA`: these variables are optional. The application works without them.
 
-   Si falta `DB_USER`, `DB_PASSWORD` o `LLAVE`, el programa no arranca y te avisa cuál falta.
+   If `DB_USER`, `DB_PASSWORD`, or `LLAVE` are missing, the application will not start and will inform you which variables are missing.
 
-5. En PostgreSQL crea dos bases de datos, `tienda` para la API y `tienda_test` para las pruebas. Puedes hacerlo desde pgAdmin o con psql:
+5. In PostgreSQL, create two databases: `tienda` for the API and `tienda_test` for the tests. You can do this using pgAdmin or psql:
 
    ```sql
    CREATE DATABASE tienda;
    CREATE DATABASE tienda_test;
    ```
-   Nota: `tienda_test` la crearan solo las pruebas
 
-6. Crea las tablas de la base `tienda`:
+6. Create the tables in the `tienda` database:
 
    ```bash
    python -m tienda.modelos_mapeados
    ```
 
-## Cómo levantarlo
+## How to run it
 
-Desde la carpeta del proyecto y con el entorno virtual activado, ejecuta:
+From the project directory, with the virtual environment activated, run:
 
 ```bash
 uvicorn tienda.main:app --reload
 ```
 
-La API queda corriendo en http://127.0.0.1:8000. Si entras a http://127.0.0.1:8000/docs puedes ver todos los endpoints y probar desde el navegador los que no piden token. Para los que sí lo piden usa Postman, Thunder Client o algo parecido, porque esa página no manda la cabecera `Authorization`.
+The API will be running at http://127.0.0.1:8000.
 
-## Cómo correr las pruebas
+If you go to http://127.0.0.1:8000/docs, you can view all the endpoints and test those that do not require a token directly from your browser.
 
-Con el entorno virtual activado y PostgreSQL corriendo, ejecuta desde la carpeta del proyecto:
+For endpoints that require a token, use Postman, Thunder Client, or a similar tool, since the documentation page in this project does not send the `Authorization` header.
+
+## How to run the tests
+
+With the virtual environment activated and PostgreSQL running, run the following command from the project directory:
 
 ```bash
 pytest -v
 ```
 
-Las pruebas revisan, por ejemplo, que no te deje ver tu perfil sin token, que un producto que no existe responda 404 y que los ids inválidos respondan 422. Usan la base `tienda_test`: crean las tablas antes de cada prueba y las borran al terminar, así que no tocan los datos de la base `tienda`.
+The tests verify, for example, that users cannot access their profiles without a token, that requests for nonexistent products return a 404 status code, and that invalid IDs return a 422 status code.
+
+The tests use the `tienda_test` database. They create the tables before each test and drop them afterward, so the data in the `tienda` database remains unaffected.
